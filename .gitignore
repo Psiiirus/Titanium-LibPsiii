@@ -2,3 +2,4 @@ tmp
 *.class
 *.pyc
 *.pyo
+build
