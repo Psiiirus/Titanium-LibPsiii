@@ -1,64 +1,76 @@
-// this sets the background color of the master UIView (when there are no windows/tab groups on it)
-Titanium.UI.setBackgroundColor('#000');
 
-// create tab group
-var tabGroup = Titanium.UI.createTabGroup();
+var UI = {
+			PsiiiTextInput : require('/lib/ui/psiiiTextInput')
+		};
+		
+var LIB = {
+			PsiiiSuggest : require('/lib/psiiiSuggest')
+		}; 
+		
+var $win = Ti.UI.createWindow({
+								title:"psiiiUI's",
+								height:'100%',
+								width:'100%',
+								backgroundColor:'#d4d4d4'
+							});
 
+var $pti_tagsObj = new UI.PsiiiTextInput({
+									onChange:function(_e)
+									{
+										var $$pti_tagsObj = $pti_tagsObj;
+										
+										Ti.API.error("PsiiiTextInput.onChange");
+										
+										LIB.PsiiiSuggest.suggest(_e.value,
+																function(_e)
+																{
+																	Ti.API.error(_e);
+																	
+																	var $data = [];
+																	
+																	for(var i in _e.suggestions)
+																	{
+																		var $s = _e.suggestions[i];
+																		
+																		$data.push({title: $s});
+																	}
+																	Ti.API.error($data);
+																	$$pti_tagsObj.setData($data);
+																});
+										
+									},
+									onBlur:function(_e)
+									{
+										var $$pti_tagsObj = $pti_tagsObj;
+										Ti.API.error("PsiiiTextInput.onBlur: "+$$pti_tagsObj.getValue());
+									}
+								},
+								{
+									borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+									height: 30,
+									top:0,
+									left: 10,
+									right:10,
+									keyboardToolbar : 
+										[
+											Titanium.UI.createButton({systemButton : Titanium.UI.iPhone.SystemButton.FLEXIBLE_SPACE}), 
+											Titanium.UI.createButton({title : 'hinzufügen',style : Titanium.UI.iPhone.SystemButtonStyle.DONE,})
+										],
+								    keyboardToolbarColor : '#999',
+								    keyboardToolbarHeight : 40
+									
+								},//_textInputObj,
+								{
+									font:{fontSize:10}
+								},//_tableViewObj,
+								{
+									top:40,
+									height:'auto'
+								}//_containerViewObj
+								);
+								
+var $input = $pti_tagsObj.getUI();
 
-//
-// create base UI tab and root window
-//
-var win1 = Titanium.UI.createWindow({  
-    title:'Tab 1',
-    backgroundColor:'#fff'
-});
-var tab1 = Titanium.UI.createTab({  
-    icon:'KS_nav_views.png',
-    title:'Tab 1',
-    window:win1
-});
+$win.add($input);
 
-var label1 = Titanium.UI.createLabel({
-	color:'#999',
-	text:'I am Window 1',
-	font:{fontSize:20,fontFamily:'Helvetica Neue'},
-	textAlign:'center',
-	width:'auto'
-});
-
-win1.add(label1);
-
-//
-// create controls tab and root window
-//
-var win2 = Titanium.UI.createWindow({  
-    title:'Tab 2',
-    backgroundColor:'#fff'
-});
-var tab2 = Titanium.UI.createTab({  
-    icon:'KS_nav_ui.png',
-    title:'Tab 2',
-    window:win2
-});
-
-var label2 = Titanium.UI.createLabel({
-	color:'#999',
-	text:'I am Window 2',
-	font:{fontSize:20,fontFamily:'Helvetica Neue'},
-	textAlign:'center',
-	width:'auto'
-});
-
-win2.add(label2);
-
-alert("muh");
-
-//
-//  add tabs
-//
-tabGroup.addTab(tab1);  
-tabGroup.addTab(tab2);  
-
-
-// open tab group
-tabGroup.open();
+$win.open();
