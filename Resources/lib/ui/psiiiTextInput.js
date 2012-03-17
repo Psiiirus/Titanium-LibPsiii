@@ -18,11 +18,23 @@ function PsiiiTextInput(_events,_textInputObj,_tableViewObj,_containerViewObj,_d
 	$this.log("PsiiiTextInput constructing...");
 	
 	$this._ui_top = 0;
+	$this._ui_focus_zindex 	= 10000;
+	$this._ui_blur_zindex 	= 0;
 	
 	var $_textInputObj = {};
 	if(_textInputObj)
 	{
 		$_textInputObj = _textInputObj 
+	}
+	
+	if(typeof $_textInputObj.height == "undefined")
+	{
+		$_textInputObj.height = 30; 
+	}
+
+	if(typeof $_textInputObj.top == "undefined")
+	{
+		$_textInputObj.top = 0; 
 	}
 	
 	if(typeof $_textInputObj.autocorrect == "undefined")
@@ -34,14 +46,22 @@ function PsiiiTextInput(_events,_textInputObj,_tableViewObj,_containerViewObj,_d
 	{
 		$_textInputObj.clearButtonMode = Titanium.UI.INPUT_BUTTONMODE_ALWAYS; 
 	}
-	 
-	var $_tableViewObj = {};
-	if(_tableViewObj)
-		$_tableViewObj = _tableViewObj 
 
 	var $_containerViewObj = {};
 	if(_containerViewObj)
 		$_containerViewObj = _containerViewObj 
+	
+	$_containerViewObj.height='auto';
+	if(typeof $_containerViewObj.top == "undefined")
+	{
+		$_containerViewObj.top = 0; 
+	}
+	 
+	 
+	 
+	var $_tableViewObj = {};
+	if(_tableViewObj)
+		$_tableViewObj = _tableViewObj 
 	/*
 	 * TextInput Change Event
 	 */
@@ -125,6 +145,9 @@ PsiiiTextInput.prototype.createTextField = function(_textInputObj)
 			$this._ui.animate({
 								top:	$this._ui_top,
 								height:	$this._ui_text_input.height
+							},function()
+							{
+								$this._ui.zindex = $this._ui_blur_zindex;
 							});
 		}			
 		
@@ -145,6 +168,8 @@ PsiiiTextInput.prototype.createTextField = function(_textInputObj)
 		
 		if($this._ui)
 		{
+			$this._ui_blur_zindex = $this._ui.zindex;
+			$this._ui.zindex = $this._ui_focus_zindex;
 			$this._ui.height= '100%';
 			$this._ui.animate({
 								top:0
@@ -154,7 +179,8 @@ PsiiiTextInput.prototype.createTextField = function(_textInputObj)
 		
 		if($this._ui_table)
 		{
-			$this._ui_table.height= '50%';
+			$this._ui_table.height	= '50%';
+			$this._ui_table.zindex 	= $this._ui_focus_zindex;
 			
 			if($this.getTableTopShadow())
 				$this.getTableTopShadow().visible = true;
