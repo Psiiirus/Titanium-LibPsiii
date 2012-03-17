@@ -48,9 +48,10 @@ var $pti_tagsObj = new UI.PsiiiTextInput({
 								{
 									borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
 									height: 30,
-									top:0,
 									left: 10,
 									right:10,
+									top:10
+									/*
 									keyboardToolbar : 
 										[
 											Titanium.UI.createButton({systemButton : Titanium.UI.iPhone.SystemButton.FLEXIBLE_SPACE}), 
@@ -58,7 +59,7 @@ var $pti_tagsObj = new UI.PsiiiTextInput({
 										],
 								    keyboardToolbarColor : '#999',
 								    keyboardToolbarHeight : 40
-									
+									*/
 								},//_textInputObj,
 								{
 									font:{fontSize:10}
@@ -67,8 +68,14 @@ var $pti_tagsObj = new UI.PsiiiTextInput({
 									top:40,
 									height:'auto'
 								}//_containerViewObj
+								,true
 								);
-								
+
+$pti_tagsObj.setTableTopShadow('/lib/ui/shadow_vertical.png');
+
+var $view2 = $pti_tagsObj.getTableTopShadow();
+//$view2.opacity = 0.5;
+			
 var $input = $pti_tagsObj.getUI();
 
 $win.add($input);
