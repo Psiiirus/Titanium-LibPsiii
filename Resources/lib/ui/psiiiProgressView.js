@@ -1,8 +1,8 @@
-var ProgressView = function(dictionary) 
+function ProgressView(_parentWindow) 
 {
     var isAndroid = (Ti.Platform.osname != "android") ? false : true;
 
-	var _window  = (dictionary) ?dictionary.window:false;
+	var _window  = (_parentWindow) ?_parentWindow.window:false;
     var _isModal = false;
     if(!_window)
     {
@@ -86,18 +86,18 @@ var ProgressView = function(dictionary)
         
     })();
     
-    this.show = function(dictionary)
+    this.show = function(_parentWindow)
     {
         if (!isAndroid)
         {
-            if (dictionary) 
+            if (_parentWindow) 
             {
-                if (dictionary.text || dictionary.textId) 
+                if (_parentWindow.text || _parentWindow.textId) 
                 {    
                     
                     _viewActivityIndicator.bottom = 20;
                     
-                    setTextLabel(dictionary);
+                    setTextLabel(_parentWindow);
                     
                     _hasText = 1;
                     
@@ -105,10 +105,10 @@ var ProgressView = function(dictionary)
                     
                 }
                 
-                if (dictionary.success == true || dictionary.error == true) 
+                if (_parentWindow.success == true || _parentWindow.error == true) 
                 {
                     _hasImage = 1;
-                    _imageViewStatus.image = "/libs/progress.view/" + ((dictionary.success == true) ? "success" : "error") + ".png";
+                    _imageViewStatus.image = "/libs/progress.view/" + ((_parentWindow.success == true) ? "success" : "error") + ".png";
                     _viewActivityIndicator.remove(_activityIndicator);
                     _viewActivityIndicator.add(_imageViewStatus);
                 }
@@ -125,12 +125,12 @@ var ProgressView = function(dictionary)
             _window.add(_viewFullBackgroundActivityIndicator);
         } 
         else {
-            if (dictionary) 
+            if (_parentWindow) 
             {
-                if (dictionary.text) {
-                    _activityIndicator.message = dictionary.text;
-                } else if (dictionary.textId) {
-                    _activityIndicator.messageid = dictionary.textId;
+                if (_parentWindow.text) {
+                    _activityIndicator.message = _parentWindow.text;
+                } else if (_parentWindow.textId) {
+                    _activityIndicator.messageid = _parentWindow.textId;
                 }
             }
             
@@ -183,16 +183,16 @@ var ProgressView = function(dictionary)
         }
     }
     
-    this.change = function(dictionary)
+    this.change = function(_parentWindow)
     {
         if (!isAndroid)
         {
-            if (dictionary)
+            if (_parentWindow)
             {
-                if (dictionary.text || dictionary.textId)
+                if (_parentWindow.text || _parentWindow.textId)
                 {
                     if (_hasText == 1) {
-                        setTextLabel(dictionary);
+                        setTextLabel(_parentWindow);
                     } 
                     else {
                         
@@ -200,21 +200,21 @@ var ProgressView = function(dictionary)
                         
                         _hasText = 1;
                         
-                        setTextLabel(dictionary);
+                        setTextLabel(_parentWindow);
                         
                         _viewBackgroundBackActivityIndicator.add(_labelActivityIndicator);
                     
                     }
                 }
                 
-                if (dictionary.success == true || dictionary.error == true) 
+                if (_parentWindow.success == true || _parentWindow.error == true) 
                 {
                     if (_hasImage == 1) {
-                        _imageViewStatus.image = "/libs/progress.view/" + ((dictionary.success == true) ? "success" : "error") + ".png";
+                        _imageViewStatus.image =  "/lib/ui/"+((_parentWindow.success == true) ? "success" : "error") + ".png";
                     }
                     else {
                         _hasImage = 1;
-                        _imageViewStatus.image = "/libs/progress.view/" + ((dictionary.success == true) ? "success" : "error") + ".png";
+                        _imageViewStatus.image = "/lib/ui/"+((_parentWindow.success == true) ? "success" : "error") + ".png";
                         _viewActivityIndicator.remove(_activityIndicator);
                         _viewActivityIndicator.add(_imageViewStatus);
                     }
@@ -229,10 +229,10 @@ var ProgressView = function(dictionary)
         }
     }
     
-    var setTextLabel = function(dictionary) 
+    var setTextLabel = function(_parentWindow) 
     {
         var _width = Ti.UI.createLabel({
-            text:(dictionary.text) ? dictionary.text : dictionary.textId,
+            text:(_parentWindow.text) ? _parentWindow.text : _parentWindow.textId,
             font:{fontSize:14, fontWeight:"bold"},
             width:"auto"
         }).toImage().width + 20;
@@ -249,9 +249,12 @@ var ProgressView = function(dictionary)
             
         }
         
-        _labelActivityIndicator.text = (dictionary.text) ? dictionary.text : dictionary.textId;
+        _labelActivityIndicator.text = (_parentWindow.text) ? _parentWindow.text : _parentWindow.textId;
     }
     
     Ti.App.addEventListener('psiii.ProgressView.close',this.hide);
     
 }
+
+
+module.exports = ProgressView;
