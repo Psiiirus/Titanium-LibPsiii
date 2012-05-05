@@ -1,5 +1,5 @@
 
-function PsiiiTable(_tableObj,_actionCallback,_parameters,_debugMode) 
+function PsiiiTableView(_tableObj,_actionCallback,_parameters,_debugMode) 
 {
 
 	
@@ -8,15 +8,15 @@ function PsiiiTable(_tableObj,_actionCallback,_parameters,_debugMode)
 	else
 		this.debugMode=false;	
 	
-	this._loadingCallback 	= function(){
-		_actionCallback();
+	this._loadingCallback 	= function(_this){
+		_actionCallback(_this);
 	};
 
 	this._text_pull 		= _parameters.text_pull;
 	this._text_refresh 		= _parameters.text_refresh;
 	this._text_last_update 	= _parameters.text_last_update;
 	this._text_loading 		= _parameters.text_loading;
-	this._text_loading_error= (_parameters.text_loading_error)?_parameters.text_loading_error:"Es ist ein Problem aufgetreten.";
+	this._text_loading_error= (_parameters.text_loading_error)?_parameters.text_loading_error:"Something went wrong.";
 	
 	this._timeout 			= (_parameters._timeout)?_parameters._timeout:8000;	
 	
@@ -41,24 +41,48 @@ function PsiiiTable(_tableObj,_actionCallback,_parameters,_debugMode)
 	
 }
 
-
-
+/*
+ * sets the table Rows and finishs psiiTableView livecycle
+ * cant call it setData couz of appC rules
+ */
+PsiiiTableView.prototype.fillData = function(_data)
+{
+	this.getTable().setData(_data);
+	this.getTable().fireEvent('_end');
+}
 /*
  * wrappter function for Ti.API.error 
  * to enable and disable debug output
  */
-PsiiiTable.prototype.log = function(_text) 
+PsiiiTableView.prototype.log = function(_text) 
 {
 	if(this.debugMode==true)
 		Ti.API.error(_text);
 }
 
- 
-PsiiiTable.prototype.getTable = function() {
+/*
+ * returns the extended Table
+ * @return Ti.UI.TableView
+ */ 
+PsiiiTableView.prototype.getTable = function() 
+{
     return this._table;
 };
 
-PsiiiTable.prototype.createPullToRefresh = function()
+/*
+ * returns the extended Table
+ * @return Ti.UI.TableView
+ */ 
+PsiiiTableView.prototype.getUI = function() 
+{
+    return this._table;
+};
+
+
+/*
+ * extends the standard Ti.UI.TableView with the push to refresh feature 
+ */
+PsiiiTableView.prototype.createPullToRefresh = function()
 {
 	
 	var $_view = Ti.UI.createView({
@@ -127,7 +151,10 @@ PsiiiTable.prototype.createPullToRefresh = function()
 	
 };
 
-PsiiiTable.prototype._scroll = function(e)
+/*
+ * Function-Event: gets fired when table is scrolling
+ */
+PsiiiTableView.prototype._scroll = function(e)
 {
 	var offset = e.contentOffset.y;
 	if (offset <= -65.0 && !this._pulling)
@@ -147,7 +174,10 @@ PsiiiTable.prototype._scroll = function(e)
 	}
 };
 
-PsiiiTable.prototype._begin = function(e, tableView)
+/*
+ * Function-Event: gets fired when loading starts
+ */
+PsiiiTableView.prototype._begin = function(e, tableView)
 {
 	if (this._pulling && !this._reloading && e.contentOffset.y <= -65.0)
 	{
@@ -160,7 +190,7 @@ PsiiiTable.prototype._begin = function(e, tableView)
 		this._table.setContentInsets({top:60},{animated:true});
 		
 		this._arrow.transform 	= Ti.UI.create2DMatrix();
-		this._loadingCallback();
+		this._loadingCallback(this);
 		
 		var $this = this;
 		
@@ -176,10 +206,12 @@ PsiiiTable.prototype._begin = function(e, tableView)
 	}
 };
 
-
-PsiiiTable.prototype._end= function()
+/*
+ * Function-Event: gets fired after loading
+ */
+PsiiiTableView.prototype._end= function()
 {
-	this.log("PsiiiTable.prototype._end "+this.isIOS);
+	this.log("PsiiiTableView.prototype._end "+this.isIOS);
 				
 	this._reloading 		= false;
 	this._lastUpdate.text 	= this._text_last_update +(String.formatTime(new Date())),
@@ -190,8 +222,8 @@ PsiiiTable.prototype._end= function()
 	if(this.isIOS)
 		this._table.setContentInsets({top:0},{animated:true});
 		
-	this.log("PsiiiTable.prototype._end done");
+	this.log("PsiiiTableView.prototype._end done");
 };
 
  
-module.exports = PsiiiTable;
+module.exports = PsiiiTableView;
