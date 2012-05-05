@@ -1,6 +1,13 @@
 
-function PsiiiTable(_tableObj,_actionCallback,_parameters) 
+function PsiiiTable(_tableObj,_actionCallback,_parameters,_debugMode) 
 {
+
+	
+	if(_debugMode)
+		this.debugMode=_debugMode;
+	else
+		this.debugMode=false;	
+	
 	this._loadingCallback 	= function(){
 		_actionCallback();
 	};
@@ -15,10 +22,17 @@ function PsiiiTable(_tableObj,_actionCallback,_parameters)
 	
 	this._label_color 		= _parameters.labelColor;
 	this._background_color	= _parameters.backgroundColor;
+	this._background_image	= _parameters.backgroundImage;
 
-    this._table 					= Titanium.UI.createTableView(_tableObj);
+	
+	this._arrow_image		= (_parameters.arrowImage)?_parameters.arrowImage:"/libs/arrow.png";
+	
+    this._table 				= Titanium.UI.createTableView(_tableObj);
     this._table.headerPullView 	= this.createPullToRefresh();
     
+    this.isAndroid 	= (Titanium.Platform.osname=='android')?true:false;
+	this.isIOS 		= (Titanium.Platform.osname=='iphone')?true:false;
+
     var $this = this;
     this._table.addEventListener("scroll",	function(_e) 	{ $this._scroll(_e); 		});
 	this._table.addEventListener("scrollEnd",function(_e) 	{ $this._begin(_e, $this); 	});
@@ -26,12 +40,21 @@ function PsiiiTable(_tableObj,_actionCallback,_parameters)
 	
 	
 }
+
+
+
+/*
+ * wrappter function for Ti.API.error 
+ * to enable and disable debug output
+ */
+PsiiiTable.prototype.log = function(_text) 
+{
+	if(this.debugMode==true)
+		Ti.API.error(_text);
+}
+
  
 PsiiiTable.prototype.getTable = function() {
-    return this._table;
-};
-
-PsiiiTable.prototype.getUI = function() {
     return this._table;
 };
 
@@ -44,8 +67,15 @@ PsiiiTable.prototype.createPullToRefresh = function()
 		height:60
 	});
 	
+	if(this._background_image)
+	{
+		
+		$_view.backgroundImage = this._background_image;
+		$_view.backgroundRepeat = true;
+	}
+	
 	var $_arrow = Ti.UI.createView({
-		backgroundImage:"/libs/arrow.png",
+		backgroundImage:this._arrow_image,
 		width:30,
 		height:30,
 		bottom:20,
@@ -59,7 +89,7 @@ PsiiiTable.prototype.createPullToRefresh = function()
 		width:220,
 		bottom:35,
 		height:"auto",
-		color: this.label_color,
+		color: this._label_color,
 		textAlign:"center",
 		font:{fontSize:13,fontWeight:"bold"}
 	});
@@ -83,8 +113,8 @@ PsiiiTable.prototype.createPullToRefresh = function()
 		bottom:13,
 		width:30,
 		height:30,
-		style:Titanium.UI.iPhone.ActivityIndicatorStyle.DARK
 	});
+		
 	$_view.add($_activityIndicator);
 	
 	//make it accessable in obj-scope
@@ -146,17 +176,21 @@ PsiiiTable.prototype._begin = function(e, tableView)
 	}
 };
 
+
 PsiiiTable.prototype._end= function()
 {
-	Ti.API.error("PsiiiTable.prototype._end");
+	this.log("PsiiiTable.prototype._end "+this.isIOS);
 				
 	this._reloading 		= false;
 	this._lastUpdate.text 	= this._text_last_update +(String.formatTime(new Date())),
 	this._status.text 		= this._text_pull;
 	this._activityIndicator.hide();
 	this._arrow.show();
-	this._table.setContentInsets({top:0},{animated:true});
-	Ti.API.error("PsiiiTable.prototype._end done");
+	
+	if(this.isIOS)
+		this._table.setContentInsets({top:0},{animated:true});
+		
+	this.log("PsiiiTable.prototype._end done");
 };
 
  
