@@ -251,4 +251,7 @@ var ProgressView = function(dictionary)
         
         _labelActivityIndicator.text = (dictionary.text) ? dictionary.text : dictionary.textId;
     }
+    
+    Ti.App.addEventListener('psiii.ProgressView.close',this.hide);
+    
 }
