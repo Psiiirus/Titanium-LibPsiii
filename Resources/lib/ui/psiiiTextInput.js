@@ -18,6 +18,8 @@ function PsiiiTextInput(_events,_textInputObj,_tableViewObj,_containerViewObj,_d
 	$this.log("PsiiiTextInput constructing...");
 	
 	$this._ui_top = 0;
+	$this._ui_max_height = _containerViewObj.max_height;
+	
 	$this._ui_focus_zindex 	= 10000;
 	$this._ui_blur_zindex 	= 0;
 	
@@ -74,7 +76,15 @@ function PsiiiTextInput(_events,_textInputObj,_tableViewObj,_containerViewObj,_d
 	$this._onBlur = false;
 	if(_events.onBlur)
 		$this._onBlur =_events.onBlur; 
-		
+
+	/*
+	 * TextInput Focus Event
+	 */
+	$this._onFocus = false;
+	if(_events.onFocus)
+		$this._onFocus =_events.onFocus; 
+
+
 	/*
 	 * CONSTRUCT - UI
 	 */
@@ -116,8 +126,7 @@ PsiiiTextInput.prototype.createContainerView = function(_containerViewObj)
 	
 	$containerView.addEventListener('click',function(_e)
 		{
-			$this.log('PsiiiTextInput.View.click - internal');
-			
+			$this.log('PsiiiTextInput.View.click - internal');		
 		});
 		
 }
@@ -134,20 +143,19 @@ PsiiiTextInput.prototype.createTextField = function(_textInputObj)
 	if($this._onChange)
 		$textInput.addEventListener('change',$this._onChange);
 	
-	if($this._onBlur)
-		$textInput.addEventListener('blur',$this._onBlur);
-	
 	$textInput.addEventListener('blur',function(_e)
 	{
 		$this.log('PsiiiTextInput.TextField.blur - internal');	
 		if($this._ui)
 		{
+			$this._ui.height=	$this._ui_text_input.height;
+			//$this._ui.top=	$this._ui_top;
+
 			$this._ui.animate({
-								top:	$this._ui_top,
-								height:	$this._ui_text_input.height
+								top:	$this._ui_top
 							},function()
 							{
-								$this._ui.zindex = $this._ui_blur_zindex;
+								//$this._ui.zindex = $this._ui_blur_zindex;
 							});
 		}			
 		
@@ -158,6 +166,10 @@ PsiiiTextInput.prototype.createTextField = function(_textInputObj)
 							
 			$this._ui_table.height= 0;
 		}
+		
+		if($this._onBlur)
+			$this._onBlur(_e);
+		
 	});
 	
 	$textInput.addEventListener('focus',function(_e)
@@ -170,22 +182,32 @@ PsiiiTextInput.prototype.createTextField = function(_textInputObj)
 		{
 			$this._ui_blur_zindex = $this._ui.zindex;
 			$this._ui.zindex = $this._ui_focus_zindex;
-			$this._ui.height= '100%';
-			$this._ui.animate({
-								top:0
-							});				
+			
+			if($this._ui_max_height)
+				$this._ui.height = $this._ui_max_height;
+			else
+				$this._ui.height= '100%';
+			//$this._ui.top= 0;
+			
+			$this._ui.animate({ top:0 });				
 		}
 			
 		
 		if($this._ui_table)
 		{
-			$this._ui_table.height	= '50%';
+			if($this._ui_max_height)
+				$this._ui_table.height = $this._ui_max_height;
+			else
+				$this._ui_table.height= '50%';
+			
 			$this._ui_table.zindex 	= $this._ui_focus_zindex;
 			
 			if($this.getTableTopShadow())
 				$this.getTableTopShadow().visible = true;
 		}
 		
+		if($this._onFocus)
+			$this._onFocus(_e);
 	});
 	
 	$this._ui_text_input = $textInput;
@@ -201,6 +223,14 @@ PsiiiTextInput.prototype.createTableView = function(_tableViewObj)
 	
 	var $tableView = Titanium.UI.createTableView(_tableViewObj);
 
+	/*
+	 * Table Click Event
+	 */	
+	var $tableView_click = false;
+	if(_tableViewObj.onClick)
+		$tableView_click =_tableViewObj.onClick; 
+	
+	
 	$this._ui_table = $tableView;
 	
 	var $tableTopAttribute = ( ($this._ui_text_input.top)?$this._ui_text_input.top:0 )
@@ -217,9 +247,24 @@ PsiiiTextInput.prototype.createTableView = function(_tableViewObj)
 		if(_e.row)
 		{
 			var $val = _e.row.title;
+			var $values = _e.row;
+			
+			Ti.API.error('--------!!------ value after click:');
+			
 			
 			if($val)
 				$this._ui_text_input.value = $val;
+				
+			Ti.API.error($val);
+				
+			if($values)
+				$this._ui_text_input.values = $values;
+			/*
+			 * call Table Click Event
+			 */
+			if($tableView_click)
+				$tableView_click(_e);
+				
 		}
 	});
 }
@@ -336,9 +381,21 @@ PsiiiTextInput.prototype.setData = function(_datas,_doAppend)
 	this._setTableData(_datas,_doAppend);
 }
  
- PsiiiTextInput.prototype.getValue = function()
+PsiiiTextInput.prototype.getValue = function()
 {	
 	return this.getTextInput().getValue();
 };
+
+PsiiiTextInput.prototype.getValues = function()
+{	
+	return this.getTextInput().getValues();
+};
+
+
+PsiiiTextInput.prototype.setValue = function(_value)
+{	
+	this.getTextInput().setValue(_value);
+};
+
  
 module.exports = PsiiiTextInput;
