@@ -1,7 +1,90 @@
 var UI = {
 			PsiiiTableView : require('/lib/ui/psiiiTableView')
 		};
+
+function createTweetTableRow(_item)
+{
+	var $tweet = {};
+	$tweet.tweet = _item.getElementsByTagName("title").item(0).text;
+	$author = _item.getElementsByTagName("author").item(0).text;
+	$author = $author.split('@');
+	$author = "@"+$author[0];
+	
+	$tweet.author = $author
+	$tweet.date = _item.getElementsByTagName("pubDate").item(0).text;
+	$tweet.image = _item.getElementsByTagName("media:content").item(0).getAttribute("url");
+	Ti.API.debug($tweet);
+	
+	
+	var $tableRow = Ti.UI.createTableViewRow({ 
+		height:'auto',
+		width:'100%',
+		layout: 'horizontal'
+		});
+	
+	var $profilImage = Ti.UI.createImageView({
+		width: 50,
+		height:50,
+		left: 5,
+		top:5,
+		image: $tweet.image,
+		borderWidth:2,
+		borderColor:'grey'
+	});
+	$tableRow.add($profilImage);
+	
+	var $rightView = Ti.UI.createView({
+		layout:'vertical',
+		width:'auto',
+		height:'auto',
+		right:5
+	});
+	
+	
+	//author text
+	var $authorLabel = Ti.UI.createLabel({
+		text : $tweet.author,
+		height:'auto',
+		width:'auto',
+		left:10,
+		color:'grey',
+		font:{fontSize:12,fontWeight:'bold'}
 		
+	});
+	$rightView.add($authorLabel);
+
+	//date text
+	var $dateLabel = Ti.UI.createLabel({
+		text : $tweet.date,
+		height:'auto' ,
+		width:'auto',
+		left:10,
+		font:{fontSize:10},
+		color:'grey'
+	});
+	$rightView.add($dateLabel);
+	
+	
+	//tweet text
+	var $tweetLabel = Ti.UI.createLabel({
+		text : $tweet.tweet,
+		height:'auto' ,
+		width:'auto',
+		left:10,
+		top:5,
+		font:{fontSize:12},
+		bottom:10
+	});
+	$rightView.add($tweetLabel);
+	
+	
+	$tableRow.add($rightView);
+	
+	
+	return $tableRow;
+	
+}		
+
 function loadRSSFeed(_psiiiTableView)
 {
 	var xhr = Titanium.Network.createHTTPClient();
@@ -16,10 +99,13 @@ function loadRSSFeed(_psiiiTableView)
 		for (var c=0;c<$items.length;c++)
 		{
 			var $item = $items.item(c);
-			var $tweet = $item.getElementsByTagName("title").item(0).text;
+			var $tweetTableRow = createTweetTableRow($item);
 			
-			$tableArray.push({title:$tweet});
+			$tableArray.push($tweetTableRow);
 		}
+		/*
+		 * adds data to the psiiiTableView
+		 */
 		_psiiiTableView.fillData($tableArray);
 		
 	};
