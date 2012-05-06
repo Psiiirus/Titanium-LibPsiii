@@ -1,7 +1,7 @@
 Welcome to LibPsiii - Titanium
 
 This is a small Lib with a couple of custom UIs and a handy ImageFactory.
-Everthing is build as a CommonJS-Module.
+Everything is build as a CommonJS-Module.
 
 var UI = {
 			PsiiiTextInput : 	require('/lib/ui/psiiiTextInput'),
@@ -12,7 +12,7 @@ var UI = {
 		
 PsiiiTextInput		
 - extented and customizeable "SearchBar" styled input
-- Input-onFocus-Event opens up an Input/Table-View which can be filled with content related to the current input
+- Input-onFocus-Event opens up an Input/Table-View which can be filled with content related stuff of the current input value
 
 PsiiiTableView
 - pretty handy Pull-To-Refresh-Table 
@@ -27,6 +27,8 @@ PsiiiImage
 - resizes images by width or height
 - mainly build for remote- an local-images currently no blobs supported
 - adds automaticaly transparent border to workaround the titanium image crop by adding borderWidth to a Ti.UI.ImageView
+ToDo
+- Fix: transparent images become white background after resizing -> ti.imagefactory uses jpeg compression
 
 PsiiiSuggest
-- little wrapper class for google's Suggest-Tool -> http://suggestqueries.google.com/complete/search?client=firefox&q=appc
+- little wrapper class for Google's Suggest-Tool -> http://suggestqueries.google.com/complete/search?client=firefox&q=appc
