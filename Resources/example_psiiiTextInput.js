@@ -16,7 +16,7 @@ Ti.API.error("generation : minimal PsiiiTextInput");
 	var $pti_minObj = new UI.PsiiiTextInput({
 										onChange:function(_e)
 										{
-											var $$pti_tagsObj = $pti_tagsObj;
+											var $$pti_tagsObj = $pti_minObj;
 											
 											Ti.API.error("PsiiiTextInput.onChange");
 											
@@ -48,14 +48,20 @@ Ti.API.error("generation : minimal PsiiiTextInput");
 										borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
 										height: 30,
 										right:10,
-										zindex:1000
+										left:10,
+										zindex:1000,
+										top:10,
 									},//_textInputObj,
 									{
 										font:{fontSize:10},
-										zindex:100000
+										zindex:100000,
+										onClick: function(_e)
+										{
+											alert(_e.row.title);
+										}
 									},//_tableViewObj,
 									{
-										top:10,
+										top:30,
 										zindex:1000
 									}//_containerViewObj
 									,true);
@@ -104,12 +110,16 @@ var $pti_tagsObj = new UI.PsiiiTextInput({
 								{
 									borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
 									height: 30,
-									left: 30,
+									left: 10,
 									right:10,
 									top:10
 								},//_textInputObj,
 								{
-									font:{fontSize:10}
+									font:{fontSize:10},
+									onClick: function(_e)
+									{
+										alert(_e.row.title);
+									}
 								},//_tableViewObj,
 								{
 									top:100,
