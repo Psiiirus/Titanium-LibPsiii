@@ -5,3 +5,5 @@ tmp
 build
 
 .project
+.fastdev.lock
+build.log
