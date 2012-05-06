@@ -57,12 +57,25 @@ exports.checkRemoteCacheURL = function(_imageURL)
     if($needsToSave === true)
     {
     	var $cache_image = Ti.UI.createImageView({ image: _imageURL, width:'auto', height:'auto' });
-        if($savedFile.write( $cache_image.toImage() ) === false)
-        	alert("couldnt write cache");
+    	
+    	$cache_image.addEventListener('error',function(){ Ti.API.debug("NOT Loaded : "+_imageURL); });
+    	$cache_image.addEventListener('load', function()
+    	{
+    		if($savedFile.write( $cache_image.toImage() ) === false)
+        		Ti.API.debug("checkRemoteCacheURL - Loaded : failed "+$savedFile.length+"-"+$savedFile.getNativePath()+" "+_imageURL);
+        	else
+        		Ti.API.debug("checkRemoteCacheURL - Loaded : done "+_imageURL);
+    	}); //fallback if image did not load fast enought
+    	
+    	
+    	if($savedFile.write( $cache_image.toImage() ) === false)
+    		Ti.API.debug("checkRemoteCacheURL - Loaded : failed "+$savedFile.length+"-"+$savedFile.getNativePath()+" "+_imageURL);
         else
-        	alert("Cache written : "+$savedFile.length+"-"+$savedFile.getNativePath() );
+        	Ti.API.debug("checkRemoteCacheURL - Loaded : done "+_imageURL);
+    	
+        
     }
-    
+    	
     Ti.API.debug("checkRemoteCacheURL : "+$returnURL);
     return $returnURL;
   }
@@ -109,7 +122,7 @@ exports.resizeImage = function(_imageBlob,_width,_height)
 	
 	if(this.isAndroid || this.useTiImageFactoryOnIOS)
 	{
-		var imagefactory = require('ti.imagefactory');		
+		var imagefactory = require('ti.imagefactory');
 		$outBlob = imagefactory.imageAsResized(_imageBlob, { width:_width, height:_height, quality: imagefactory.QUALITY_MEDIUM });
 		Ti.API.debug("psiiiImage used ti.imagefactory");
 	}
