@@ -3,6 +3,10 @@ Welcome to LibPsiii - Titanium
 This is a small Lib with a couple of custom UIs and a handy ImageFactory.
 Everything is build as a CommonJS-Module.
 
+ToDo
+- check everthing on Android
+
+
 var UI = {
 			PsiiiTextInput : 	require('/lib/ui/psiiiTextInput'),
 			PsiiiTableView : 	require('/lib/ui/psiiiTableView'),
