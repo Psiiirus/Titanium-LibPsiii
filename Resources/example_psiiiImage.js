@@ -20,19 +20,18 @@ var UI = {
 													);
 	$win.add($imageView_width);
 
-	var $imageView_height = UI.PsiiiImage.createResizedImage('https://static.appcelerator.net/images/header/appc_logo.png',
+	var $imageView_height = UI.PsiiiImage.createResizedImage('http://www.androidguys.com/wp-content/uploads/2009/08/appcelerator1.png',
 														{
 															
 															height : 100, //image gets resized to fit a height of 200
 															
-															borderWidth: 2,
+															borderWidth: 5,
 															borderColor:'#FFF',
 															top : 120,
 															left: 30
 														}
 													);
 	$win.add($imageView_height);
-	
 	
 	// Create a Button.
 	var $btn = Ti.UI.createButton({
