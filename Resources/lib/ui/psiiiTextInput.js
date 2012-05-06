@@ -59,17 +59,17 @@ function PsiiiTextInput(_events,_textInputObj,_tableViewObj,_containerViewObj,_d
 		$_containerViewObj.top = 0; 
 	}
 	 
-	 
-	 
 	var $_tableViewObj = {};
 	if(_tableViewObj)
-		$_tableViewObj = _tableViewObj 
+		$_tableViewObj = _tableViewObj;
+		
 	/*
 	 * TextInput Change Event
 	 */
 	$this._onChange = false;	
 	if(_events.onChange)
 		$this._onChange =_events.onChange; 
+		
 	/*
 	 * TextInput Blur Event
 	 */
