@@ -32,5 +32,26 @@ var UI = {
 														}
 													);
 	$win.add($imageView_height);
-
+	
+	
+	// Create a Button.
+	var $btn = Ti.UI.createButton({
+		title : 'clear cache and close window',
+		height : 30,
+		bottom : 10,
+		left : 10,
+		right: 10
+	});
+	
+	// Listen for click events.
+	$btn.addEventListener('click', function() 
+	{
+		UI.PsiiiImage.releaseCache();
+		alert("Cleared Cachefolder");
+		$win.close();
+	});
+	
+	// Add to the parent view.
+	$win.add($btn);
+	
 })();

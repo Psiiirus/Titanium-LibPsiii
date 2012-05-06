@@ -4,8 +4,35 @@ exports.debugMode = true;
 exports.isAndroid 	= (function(){ if (Titanium.Platform.osname=='android'){ return true;}else{return false;}})();
 exports.isIOS 		= (function(){ if(Titanium.Platform.osname=='iphone'){return true;}else{return false;} })();
 
-exports.useTiImageFactoryOnIOS = false;
 
+exports.useTiImageFactoryOnIOS = true;
+
+var $imageDirName= 'psiiiImage'; //needs to be a global to be available for (function(){})() - Calls
+exports.imageDir 	=	(function()
+						{
+							var $imageDir = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory,$imageDirName);
+							if (! $imageDir.exists())
+							    $imageDir.createDirectory();
+
+							return $imageDir.resolve();
+						})();
+
+
+/*
+ * drops the cache folder and does a recreate after that
+ */
+exports.releaseCache = function()
+{
+	var $imageDir = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory,$imageDirName);
+
+	if( $imageDir.exists() )
+		if( $imageDir.deleteDirectory(true) )
+			$imageDir.createDirectory();
+}
+
+/*
+ * checks if the url is already saved on device
+ */
 exports.checkRemoteCacheURL = function(_imageURL)
 {
     var $needsToSave = false;
@@ -15,7 +42,7 @@ exports.checkRemoteCacheURL = function(_imageURL)
     
     if(_imageURL)
     {
-      $savedFile = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory,_imageURL.replace(/(https|http|\/|:)/g,'') );
+      $savedFile = Titanium.Filesystem.getFile(this.imageDir,_imageURL.replace(/(https|http|\/|:)/g,'') );
       if($savedFile.exists())
       {
         $returnURL = $savedFile.getNativePath();
@@ -84,6 +111,7 @@ exports.resizeImage = function(_imageBlob,_width,_height)
 	{
 		var imagefactory = require('ti.imagefactory');		
 		$outBlob = imagefactory.imageAsResized(_imageBlob, { width:_width, height:_height, quality: imagefactory.QUALITY_MEDIUM });
+		Ti.API.debug("psiiiImage used ti.imagefactory");
 	}
 	else
 		$outBlob = _imageBlob.imageAsResized(_width,_height); // iOS
