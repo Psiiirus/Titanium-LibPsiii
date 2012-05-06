@@ -1,18 +1,32 @@
-Welcome to your Appcelerator Titanium Mobile Project
+Welcome to LibPsiii - Titanium
 
-This is a blank project.  Start by editing your application's app.js to 
-make your first mobile project using Titanium.
+This is a small Lib with a couple of custom UIs and a handy ImageFactory.
+Everthing is build as a CommonJS-Module.
 
+var UI = {
+			PsiiiTextInput : 	require('/lib/ui/psiiiTextInput'),
+			PsiiiTableView : 	require('/lib/ui/psiiiTableView'),
+			PsiiiProgressView : require('/lib/ui/psiiiProgressView'),
+			PsiiiImage: 		require('lib/ui/psiiiImage')
+		};
+		
+PsiiiTextInput		
+- extented and customizeable "SearchBar" styled input
+- Input-onFocus-Event opens up an Input/Table-View which can be filled with content related to the current input
 
+PsiiiTableView
+- pretty handy Pull-To-Refresh-Table 
 
-----------------------------------
-Stuff our legal folk make us say:
+PsiiiProgressView
+- easy to use custom Activity-Indicator
+- this is an extended version of https://github.com/Nyvra/titanium-appcelerator-progress-view
 
-Appcelerator, Appcelerator Titanium and associated marks and logos are 
-trademarks of Appcelerator, Inc. 
+PsiiiImage
+- nice imageFactory to reduce your code and device memory usage
+- caches remote-images
+- resizes images by width or height
+- mainly build for remote- an local-images currently no blobs supported
+- adds automaticaly transparent border to workaround the titanium image crop by adding borderWidth to a Ti.UI.ImageView
 
-Titanium is Copyright (c) 2009-2010 by Appcelerator, Inc. All Rights Reserved.
-
-Titanium is licensed under the Apache Public License (Version 2). Please
-see the LICENSE file for the full license.
-
+PsiiiSuggest
+- little wrapper class for google's Suggest-Tool -> http://suggestqueries.google.com/complete/search?client=firefox&q=appc
