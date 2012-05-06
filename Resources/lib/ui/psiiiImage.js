@@ -4,7 +4,6 @@ exports.debugMode = true;
 exports.isAndroid 	= (function(){ if (Titanium.Platform.osname=='android'){ return true;}else{return false;}})();
 exports.isIOS 		= (function(){ if(Titanium.Platform.osname=='iphone'){return true;}else{return false;} })();
 
-
 exports.useTiImageFactoryOnIOS = true;
 
 var $imageDirName= 'psiiiImage'; //needs to be a global to be available for (function(){})() - Calls
@@ -116,14 +115,29 @@ exports.calcProportionalSize = function($orig_x, $orig_y, $max_x, $max_y)
  * @param {Number} _height '20' 
  * @return Ti.Blob
  */
-exports.resizeImage = function(_imageBlob,_width,_height)
+exports.resizeImage = function(_imageBlob,_width,_height,_params)
 {
 	var $outBlob;
 	
 	if(this.isAndroid || this.useTiImageFactoryOnIOS)
 	{
 		var imagefactory = require('ti.imagefactory');
-		$outBlob = imagefactory.imageAsResized(_imageBlob, { width:_width, height:_height, quality: imagefactory.QUALITY_MEDIUM });
+		var $resizeTransformObj = { type:imagefactory.TRANSFORM_RESIZE, width:_width, height:_height, quality: imagefactory.QUALITY_MEDIUM };
+		
+		var $borderTransformObj = {};
+		if(_params.borderWidth)
+		{
+			$borderTransformObj.type 		= imagefactory.TRANSFORM_TRANSPARENTBORDER;
+			$borderTransformObj.borderSize 	= _params.borderWidth;
+			
+		}
+			
+		$outBlob = imagefactory.imageTransform(
+													_imageBlob, 
+													$resizeTransformObj,
+													$borderTransformObj
+												);
+												
 		Ti.API.debug("psiiiImage used ti.imagefactory");
 	}
 	else
@@ -147,7 +161,8 @@ exports.resizeImage = function(_imageBlob,_width,_height)
  * @param {Number} _newWidth '20' 
  * @return Ti.Blob
  */
-exports.createResizedImageBlobByWidth = function(_imageBlob, _newWidth) {
+exports.createResizedImageBlobByWidth = function(_imageBlob, _newWidth, _params) 
+{
 	
 	var $imageWidth  = _imageBlob.width;
 	var $imageHeight = _imageBlob.height;
@@ -161,7 +176,7 @@ exports.createResizedImageBlobByWidth = function(_imageBlob, _newWidth) {
     var $w = _newWidth;
     var $h = _newWidth / $ratio;
 	
-    return this.resizeImage(_imageBlob,$w,$h);
+    return this.resizeImage(_imageBlob,$w,$h,_params);
 }
 
 /**
@@ -170,7 +185,7 @@ exports.createResizedImageBlobByWidth = function(_imageBlob, _newWidth) {
  * @param {Number} _newHeight '20' 
  * @return Ti.Blob
  */
-exports.createResizedImageBlobByHeight= function(_imageBlob, _newHeight) 
+exports.createResizedImageBlobByHeight= function(_imageBlob, _newHeight,_params) 
 {
 	var $imageWidth = _imageBlob.width;
 	var $imageHeight = _imageBlob.height;
@@ -184,7 +199,7 @@ exports.createResizedImageBlobByHeight= function(_imageBlob, _newHeight)
     var $w = _newHeight * $ratio;
     var $h = _newHeight;
 
-    return this.resizeImage(_imageBlob,$w,$h);
+    return this.resizeImage(_imageBlob,$w,$h,_params);
 }
 
 /**
@@ -206,7 +221,7 @@ exports.createResizedImageViewByHeight = function(_imageURL,_newHeight,_params)
 	});
 	
 	var $t_blob = $t_image.toBlob();
-	var $n_blob = this.createResizedImageBlobByHeight($t_blob,_newHeight);
+	var $n_blob = this.createResizedImageBlobByHeight($t_blob,_newHeight,_params);
 	
 	_params.width	= $n_blob.width;
 	_params.height	= $n_blob.height;
@@ -250,7 +265,7 @@ exports.createResizedImageViewByWidth = function(_imageURL,_newWidth,_params)
 	});
 	
 	var $t_blob = $t_image.toImage();
-	var $n_blob = this.createResizedImageBlobByWidth($t_blob,_newWidth);
+	var $n_blob = this.createResizedImageBlobByWidth($t_blob,_newWidth,_params);
 	
 	_params.width	= $n_blob.width;
 	_params.height	= $n_blob.height;
