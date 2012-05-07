@@ -12,7 +12,7 @@ var LIB = {
 		}; 
 		
 	var $win = Ti.UI.createWindow({
-									title:"LibPsiii Examples",
+									title:"LibPsiii Examples "+Ti.version,
 									height:'100%',
 									width:'100%',
 									backgroundColor:'#d4d4d4',
