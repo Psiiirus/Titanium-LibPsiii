@@ -17,14 +17,14 @@ var UI = {
 			if(_success)
 			{
 				$notify.change({ 
-								text: 'Successful ...',
+								text: 'Successful',
 								success: true
 						    });
 			}
 			else
 			{
 				$notify.change({ 
-								text: 'Error ...',
+								text: 'Error',
 								error: true
 						    });
 			}
@@ -42,7 +42,7 @@ var UI = {
 	
 	// Create a Button.
 	var $errorButton = Ti.UI.createButton({
-		title : 'Show failed loading',
+		title : 'Loading: Error',
 		top : 100,
 		left: 10,
 		right: 10,
