@@ -221,6 +221,9 @@ PsiiiTextInput.prototype.createTableView = function(_tableViewObj)
 {
 	var $this = this;
 	
+	if(!_tableViewObj.height)
+		_tableViewObj.height=0;
+		
 	var $tableView = Titanium.UI.createTableView(_tableViewObj);
 
 	/*

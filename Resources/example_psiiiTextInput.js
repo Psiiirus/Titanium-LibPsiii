@@ -46,7 +46,7 @@ Ti.API.error("generation : minimal PsiiiTextInput");
 									},
 									{
 										borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
-										height: 30,
+										height: 35,
 										right:10,
 										left:10,
 										zindex:1000,
@@ -109,7 +109,7 @@ var $pti_tagsObj = new UI.PsiiiTextInput({
 								},
 								{
 									borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
-									height: 30,
+									height: 35,
 									left: 10,
 									right:10,
 									top:10
