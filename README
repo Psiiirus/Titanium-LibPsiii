@@ -32,8 +32,11 @@ PsiiiImage
 - resizes images by width or height
 - mainly build for remote- an local-images currently no blobs supported
 - adds automaticaly transparent border to workaround the titanium image crop by adding borderWidth to a Ti.UI.ImageView
+- if compiled with Ti.SDK 2.0.1+ the alpha channel on .png files will still exist after resizing
+
 ToDo
 - Fix: transparent images become white background after resizing -> ti.imagefactory uses jpeg compression
+	# Ti.SDK 2.0.1 keeps the alpha channel on .png files
 
 PsiiiSuggest
 - little wrapper class for Google's Suggest-Tool -> http://suggestqueries.google.com/complete/search?client=firefox&q=appc
