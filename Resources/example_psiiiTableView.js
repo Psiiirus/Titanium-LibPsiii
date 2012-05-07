@@ -17,10 +17,11 @@ function createTweetTableRow(_item)
 	
 	
 	var $tableRow = Ti.UI.createTableViewRow({ 
-		height:'auto',
 		width:'100%',
-		layout: 'horizontal'
+		layout: 'horizontal',
+		height: 120
 		});
+
 	
 	var $profilImage = Ti.UI.createImageView({
 		width: 50,
@@ -118,8 +119,8 @@ function loadRSSFeed(_psiiiTableView)
 		
 (function(){
 
-	var $win = Ti.UI.currentWindow;
-	
+	var $win = Ti.UI.currentWindow; 
+	 
 	var $psiiiTableObj = new UI.PsiiiTableView({ 
 													top:0,
 													width : 		'100%', 
