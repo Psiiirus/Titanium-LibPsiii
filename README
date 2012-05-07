@@ -7,6 +7,7 @@ Developed on iOS 5 and Ti.SDK 1.8.2
 ToDo
 - check everthing on Android
 - check on Ti.SDK 2.0.1
+- It seems that FastDev sometimes breaks the ImageCached Files
 
 var UI = {
 			PsiiiTextInput : 	require('/lib/ui/psiiiTextInput'),
