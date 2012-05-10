@@ -7,3 +7,5 @@ build
 .project
 .fastdev.lock
 build.log
+.settings/com.appcelerator.titanium.core.prefs
+manifest
