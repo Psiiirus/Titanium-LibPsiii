@@ -5,6 +5,7 @@ exports.isAndroid 	= (function(){ if (Titanium.Platform.osname=='android'){ retu
 exports.isIOS 		= (function(){ if(Titanium.Platform.osname=='iphone'){return true;}else{return false;} })();
 
 exports.useTiImageFactoryOnIOS = true;
+exports.useLocalImageCache = true;
 
 var $imageDirName= 'psiiiImage'; //needs to be a global to be available for (function(){})() - Calls
 exports.imageDir 	=	(function()
@@ -34,6 +35,8 @@ exports.releaseCache = function()
  */
 exports.checkRemoteCacheURL = function(_imageURL)
 {
+	var $isCached = false;
+	
     var $needsToSave = false;
     var $savedFile;
     
@@ -44,6 +47,8 @@ exports.checkRemoteCacheURL = function(_imageURL)
       $savedFile = Titanium.Filesystem.getFile(this.imageDir,_imageURL.replace(/(https|http|\/|:)/g,'') );
       if($savedFile.exists())
       {
+      	$isCached = true;
+      	
         $returnURL = $savedFile.getNativePath();
       } 
       else 
@@ -55,28 +60,17 @@ exports.checkRemoteCacheURL = function(_imageURL)
     
     if($needsToSave === true)
     {
-    	var $cache_image = Ti.UI.createImageView({ image: _imageURL, width:'auto', height:'auto' });
-    	
-    	$cache_image.addEventListener('error',function(){ Ti.API.debug("NOT Loaded : "+_imageURL); });
-    	$cache_image.addEventListener('load', function()
+    	this.workaroundImageLoader(_imageURL,function(_imageBlob)
     	{
-    		if($savedFile.write( $cache_image.toImage() ) === false)
-        		Ti.API.debug("checkRemoteCacheURL - Loaded : failed "+$savedFile.length+"-"+$savedFile.getNativePath()+" "+_imageURL);
-        	else
-        		Ti.API.debug("checkRemoteCacheURL - Loaded : done "+_imageURL);
-    	}); //fallback if image did not load fast enought
-    	
-    	
-    	if($savedFile.write( $cache_image.toImage() ) === false)
-    		Ti.API.debug("checkRemoteCacheURL - Loaded : failed "+$savedFile.length+"-"+$savedFile.getNativePath()+" "+_imageURL);
-        else
-        	Ti.API.debug("checkRemoteCacheURL - Loaded : done "+_imageURL);
-    	
-        
+    		if($savedFile.write( _imageBlob ) === false)
+	    		Ti.API.debug("checkRemoteCacheURL - Loaded : failed "+_imageBlob.length+" "+_imageURL);
+	        else
+	        	Ti.API.debug("checkRemoteCacheURL - Loaded : done "+_imageURL+"-"+_imageBlob.getNativePath());
+    	});
     }
     	
     Ti.API.debug("checkRemoteCacheURL : "+$returnURL);
-    return $returnURL;
+    return {isCached: $isCached, url : $returnURL};
   }
 
 
@@ -122,7 +116,9 @@ exports.resizeImage = function(_imageBlob,_width,_height,_params)
 	if(this.isAndroid || this.useTiImageFactoryOnIOS)
 	{
 		var imagefactory = require('ti.imagefactory');
-		var $resizeTransformObj = { type:imagefactory.TRANSFORM_RESIZE, width:_width, height:_height, quality: imagefactory.QUALITY_MEDIUM };
+		
+		var $width = _width;
+		var $height = _height;
 		
 		var $borderTransformObj = {};
 		if(_params.borderWidth)
@@ -130,7 +126,15 @@ exports.resizeImage = function(_imageBlob,_width,_height,_params)
 			$borderTransformObj.type 		= imagefactory.TRANSFORM_TRANSPARENTBORDER;
 			$borderTransformObj.borderSize 	= _params.borderWidth;
 			
+			var $width  = $width-(2*_params.borderWidth);
+			var $height = $height-(2*_params.borderWidth);
 		}
+		var $resizeTransformObj = { 
+									type:imagefactory.TRANSFORM_RESIZE, 
+									width: $width, 
+									height: $height, 
+									quality: imagefactory.QUALITY_MEDIUM 
+								};
 			
 		$outBlob = imagefactory.imageTransform(
 													_imageBlob, 
@@ -146,7 +150,7 @@ exports.resizeImage = function(_imageBlob,_width,_height,_params)
 	if(this.debugMode)
 	{
 		Ti.API.debug("--------------------------------");		
-		Ti.API.debug("resizeImage : "+_width+"x"+_height);		
+		Ti.API.debug("resizeImage : "+$outBlob.width+"x"+$outBlob.height);		
 		Ti.API.debug("Original Blob: "+(_imageBlob.length/1024/1024)+"MB");
 		Ti.API.debug("Resized Blob: "+($outBlob.length/1024/1024)+"MB");
 		Ti.API.debug("--------------------------------");
@@ -219,7 +223,7 @@ exports.createResizedImageViewByHeight = function(_imageURL,_newHeight,_params)
 		width:'auto',
 		height:'auto'
 	});
-	
+
 	var $t_blob = $t_image.toBlob();
 	var $n_blob = this.createResizedImageBlobByHeight($t_blob,_newHeight,_params);
 	
@@ -262,8 +266,9 @@ exports.createResizedImageViewByWidth = function(_imageURL,_newWidth,_params)
 		image: _imageURL,
 		width:'auto',
 		height:'auto'
+		
 	});
-	
+
 	var $t_blob = $t_image.toImage();
 	var $n_blob = this.createResizedImageBlobByWidth($t_blob,_newWidth,_params);
 	
@@ -287,31 +292,97 @@ exports.createResizedImageViewByWidth = function(_imageURL,_newWidth,_params)
 	$t_blob = null; //will this help?
 	$t_image = null;//will this help?
 	return $n_imageView;
-}
+};
 
 
 /*
  * wrapper function for the psiiiImage Factory
  */
 
-exports.createResizedImage = function(_imageURL,_imageObj)
+exports.createResizedImage = function(_imageURL,_imageObj,_onLoad)
 {
-	var $image_url = this.checkRemoteCacheURL(_imageURL);
+	var $isLocal = false;
+	if(this.useLocalImageCache)
+	{
+		Ti.API.error("check for cache");		
+		var $tempCheck = this.checkRemoteCacheURL(_imageURL);
+		_imageURL = $tempCheck.url;
+		$isLocal = $tempCheck.isCached;
+	}
 	
+	if( $isLocal || _imageURL.indexOf("http://")===-1)
+		$isLocal = true;
+	else
+		$isLocal = false;
+
 	if(!_imageObj)
 		var _imageObj = {};
 		
 	var $width 	= (_imageObj.width)?_imageObj.width:false;
 	var $height = (_imageObj.height)?_imageObj.height:false;
 	
-	var $imageView;
+	var $imageView = Ti.UI.createImageView(_imageObj);
 	
-	if($width)
-		$imageView = this.createResizedImageViewByWidth($image_url,$width,_imageObj);
-	else if($height)
-		$imageView = this.createResizedImageViewByHeight($image_url,$height,_imageObj);
+	var $this = this;
 	
+	if(!$isLocal)
+	{
+		this.workaroundImageLoader(	_imageURL,
+									function(_imageBlob)
+									{
+										Ti.API.error(" workaroundImageLoader "+_imageURL);
+										
+										if($width)
+											var $imageViewBlob = $this.createResizedImageBlobByWidth(_imageBlob,$width,_imageObj);
+										else if($height)
+											var $imageViewBlob = $this.createResizedImageBlobByHeight(_imageBlob,$height,_imageObj);
+										
+										
+										$imageView.image 	= $imageViewBlob;
+										$imageView.width 	= $imageViewBlob.width;
+										$imageView.height 	= $imageViewBlob.height;
+										
+										
+										Ti.API.debug("---------------- "+_imageURL+" - "+$imageViewBlob.width);
+										$imageViewBlob = null;
+										
+										if(_onLoad)
+											_onLoad($imageView,_imageObj);
+										
+									});
+	}else
+	{
+		if($width)
+			$imageView = $this.createResizedImageViewByWidth(_imageURL,$width,_imageObj);
+		else if($height)
+			$imageView = $this.createResizedImageViewByHeight(_imageURL,$height,_imageObj);
+			
+		if(_onLoad)
+			_onLoad($imageView,_imageObj);
+	}
 	
 	return $imageView;
-}
+};
 
+
+exports.workaroundImageLoader = function(_url,_callback)
+{
+	var xhr = Titanium.Network.createHTTPClient();
+ 
+    xhr.onload = 	function(e)
+					{
+					    var $uri = e.source.location;
+					    var $imgData = e.source.responseData;
+					 	
+					 	_callback($imgData);
+					    //targetView.image = imgData;
+					 
+					    // perform any other load behaviours to perform for the image
+					};
+    xhr.onerror = function(){ };
+    xhr.setTimeout(30000);          // ...or whatever is appropriate
+    xhr.open('GET', _url);
+    xhr.send();
+ 
+    Ti.API.info('Reading remote image: ' + _url);
+};
