@@ -155,7 +155,7 @@ $win.add($table);
 
 # PsiiiProgressView
 - easy to use custom Activity-Indicator
-- this is an extended version of https://github.com/Nyvra/titanium-appcelerator-progress-view
+- this is an extended/commonJS version of https://github.com/Nyvra/titanium-appcelerator-progress-view
 
 ```
 var $notify = new UI.PsiiiProgressView();
