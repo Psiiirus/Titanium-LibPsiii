@@ -8,7 +8,7 @@
         <target device="ipad">true</target>
         <target device="android">true</target>
     </deployment-targets>
-    <id>com.mm.tds.mydummy</id>
+    <id>com.mandarin.lib.libpsiii</id>
     <name>LibPsiii</name>
     <version>1.0</version>
     <publisher>toni</publisher>
