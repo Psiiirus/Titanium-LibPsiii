@@ -9,13 +9,14 @@ Developed on iOS 5 and Ti.SDK 1.8.2
 - check on Ti.SDK 2.0.1
 - It seems that FastDev sometimes breaks the ImageCached Files
 
+```
 	var UI = {
-				PsiiiTextInput : 	require('/lib/ui/psiiiTextInput'),
-				PsiiiTableView : 	require('/lib/ui/psiiiTableView'),
-				PsiiiProgressView : require('/lib/ui/psiiiProgressView'),
-				PsiiiImage: 		require('lib/ui/psiiiImage')
-			};
-		
+			PsiiiTextInput : 	require('/lib/ui/psiiiTextInput'),
+			PsiiiTableView : 	require('/lib/ui/psiiiTableView'),
+			PsiiiProgressView : 	require('/lib/ui/psiiiProgressView'),
+			PsiiiImage: 		require('lib/ui/psiiiImage')
+		};
+```		
 # PsiiiTextInput		
 - extented and customizeable "SearchBar" styled input
 - Input-onFocus-Event opens up an Input/Table-View which can be filled with content related stuff of the current input value
